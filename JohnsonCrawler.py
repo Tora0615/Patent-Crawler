@@ -60,41 +60,71 @@ headers = {
     "Upgrade-Insecure-Requests": "1"
 }
 
-# PFIZER INC index : 1 ~ 6961
+# JOHNSON & JOHNSON index : 1 ~ 10048
 index = 1
-url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
+url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22JOHNSON+%26+JOHNSON%22&OS=%22JOHNSON+%26+JOHNSON%22&RS=%22JOHNSON+%26+JOHNSON%22"
 rowCount = 0
 
 # New Excel
 workbook = xlwt.Workbook(encoding='utf-8') 
-sheetPFIZER = workbook.add_sheet("PFIZER") 
 sheetJOHNSON = workbook.add_sheet("JOHNSON") 
 
 while True:     
     while True:
         try : 
-            #time.sleep(5)
-            url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
+            url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22JOHNSON+%26+JOHNSON%22&OS=%22JOHNSON+%26+JOHNSON%22&RS=%22JOHNSON+%26+JOHNSON%22"
             result = requests.get(url, headers=headers)
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
                 trList = soup.find_all("tr")
                 PATNO = trList[5].find_all("b")[1].string
-                FILED = changeTimeFormate(trList[14].find_all("b")[0].string)
                 PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
+                FILED =''
+                CPC =''
+                IPC =''
                 
-                # 動態，改偵測 Table 
-                tableList = soup.find_all("table")
-                CPC = tableList[7].find_all("td")[3].string.replace("&nbsp"," ")  
-                IPC = tableList[7].find_all("td")[5].string.replace("&nbsp"," ")  
+                # 動態，改動態搜尋關鍵字 
+                tempIndex = 6
+                while True:
+                    if tempIndex > 50:
+                        break
+                    try:
+                        if "Filed" in trList[tempIndex].find_all("th")[0].string : 
+                            break
+                        else:
+                            tempIndex += 1
+                    except:
+                        tempIndex += 1
+                try:
+                    FILED = changeTimeFormate(trList[tempIndex].find_all("b")[0].string)
+                except:
+                    pass
                 
                 
-                sheetPFIZER.write(rowCount,0,PATNO)
-                sheetPFIZER.write(rowCount,1,CPC)
-                sheetPFIZER.write(rowCount,2,IPC)
-                sheetPFIZER.write(rowCount,3,FILED)
-                sheetPFIZER.write(rowCount,4,PATDATE)
+                tempIndex = 10
+                while True:
+                    if tempIndex > 50:
+                        break
+                    try:
+                        if "CPC" in trList[tempIndex].find_all("td")[0].string : 
+                            break
+                        else:
+                            tempIndex += 1
+                    except:
+                        tempIndex += 1
+                try:
+                    CPC = trList[tempIndex].find_all("td")[1].string.replace("&nbsp"," ")
+                    IPC = trList[tempIndex+1].find_all("td")[1].string.replace("&nbsp"," ")
+                except:
+                    pass
                 
+                sheetJOHNSON.write(rowCount,0,PATNO)
+                sheetJOHNSON.write(rowCount,1,CPC)
+                sheetJOHNSON.write(rowCount,2,IPC)
+                sheetJOHNSON.write(rowCount,3,FILED)
+                sheetJOHNSON.write(rowCount,4,PATDATE)
+                
+                print("----"+str(index)+"/10048 OK------")
                 index += 1
                 rowCount += 1
                 break
@@ -123,16 +153,9 @@ while True:
             }
             print("sleep 15 sec")
             time.sleep(15)
-    if index > 3:  # 6961
+    if index > 10048:  # 10048
         break
 
-workbook.save('result.xls') 
+workbook.save('JohnsonResult.xls') 
 
 
-'''
-# test
-result = requests.get(url, headers=headers)
-if result.status_code == 200:
-    soup = BeautifulSoup(result.text,'lxml')
-
-'''

@@ -9,24 +9,24 @@ A repo to save a commission's crawler which can get some companies' info from pa
 
 ### CPC
 ```soup.find_all("tr")[29].find_all("td")[1].string```
-* Need to use .replace("&nbsp"," ") to replace "&nbsp"
+* Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
 
 ### IPC
 ```soup.find_all("tr")[30].find_all("td")[1].string```
-* Need to use .replace("&nbsp"," ") to replace "&nbsp"
+* Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
 
 ### Filed 
 ```soup.find_all("tr")[14].find_all("b")[0].string```
 * Need to replace time type
-    * use changeTimeFormate()
+    * use ```changeTimeFormate()```
 
 ### Date of patent
 ```soup.find_all("tr")[6].find_all("b")[1].string```
 * output : \n     September 28, 2021\n
     * Need replace \n and space at left and right
-        * use .replace("\n","").strip()
+        * use ```.replace("\n","").strip()```
 * Need to replace time type 
-    * use changeTimeFormate()
+    * use ```changeTimeFormate()```
 
 ## changeTimeFormate
 * origin formate like : September 28, 2021 

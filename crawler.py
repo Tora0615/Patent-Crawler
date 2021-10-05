@@ -4,7 +4,7 @@ Created on Tue Oct  5 10:23:09 2021
 
 @author: Arthur
 """
-
+import xlwt 
 import requests
 import time
 from fake_useragent import UserAgent
@@ -40,44 +40,94 @@ def changeTimeFormate(input):
 
 # 偽造 UserAgent
 ua = UserAgent()
-headers = {'User-Agent': ua.random}
+headers = {
+    'User-Agent': ua.random,
+    "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    "Accept-Encoding": 'gzip, deflate, br',
+    "Accept-Language": 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    "Cache-Control": 'no-cache',
+    "Connection": 'keep-alive',
+    "Host": 'patft.uspto.gov',
+    "Pragma": 'no-cache',
+    "Referer": 'https://patft.uspto.gov/netahtml/PTO/search-bool.html',
+    "sec-ch-ua": '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1"
+}
 
 # PFIZER INC index : 1 ~ 6961
 index = 1
 url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
+rowCount = 0
+
+# New Excel
+workbook = xlwt.Workbook(encoding='utf-8') 
+sheetPFIZER = workbook.add_sheet("PFIZER") 
+sheetJOHNSON = workbook.add_sheet("JOHNSON") 
+
+while True:     
+    while True:
+        try : 
+            time.sleep(5)
+            result = requests.get(url)
+            if result.status_code == 200:
+                soup = BeautifulSoup(result.text,'lxml')
+                trList = soup.find_all("tr")
+                PATNO = trList[5].find_all("b")[1].string
+                CPC = trList[29].find_all("td")[1].string.replace("&nbsp"," ")
+                IPC = trList[30].find_all("td")[1].string.replace("&nbsp"," ")
+                FILED = changeTimeFormate(trList[14].find_all("b")[0].string)
+                PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
+                
+                sheetPFIZER.write(rowCount,0,PATNO)
+                sheetPFIZER.write(rowCount,1,CPC)
+                sheetPFIZER.write(rowCount,2,IPC)
+                sheetPFIZER.write(rowCount,3,FILED)
+                sheetPFIZER.write(rowCount,4,PATDATE)
+                
+                index += 1
+                rowCount += 1
+                break
+            else:
+                raise ValueError("status_code NOT 200")
+        except Exception as e:
+            print(e)
+            headers = {
+                'User-Agent': ua.random,
+                "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+                "Accept-Encoding": 'gzip, deflate, br',
+                "Accept-Language": 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+                "Cache-Control": 'no-cache',
+                "Connection": 'keep-alive',
+                "Host": 'patft.uspto.gov',
+                "Pragma": 'no-cache',
+                "Referer": 'https://patft.uspto.gov/netahtml/PTO/search-bool.html',
+                "sec-ch-ua": '"Chromium";v="94", "Google Chrome";v="94", ";Not A Brand";v="99"',
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": '"Windows"',
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1"
+            }
+            print("sleep 15 sec")
+            time.sleep(15)
+    if index > 2:  # 6961
+        break
+
+workbook.save('result.xls') 
 
 
+'''
 # test
 result = requests.get(url, headers=headers)
 if result.status_code == 200:
     soup = BeautifulSoup(result.text,'lxml')
 
-
-
-
-
-
-
-        
-
-
 '''
-while True:     
-    while True:
-        result = requests.get(url)
-        if result.status_code == 200:
-            soup = BeautifulSoup(result.text,'lxml')
-            index += 1
-            break
-        headers = {'User-Agent': ua.random}
-        time.sleep(2)
-    if index > 6961:
-        break
-'''
-
-
-
-
-
-
-

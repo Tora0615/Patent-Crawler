@@ -73,16 +73,21 @@ sheetJOHNSON = workbook.add_sheet("JOHNSON")
 while True:     
     while True:
         try : 
-            time.sleep(5)
-            result = requests.get(url)
+            #time.sleep(5)
+            url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
+            result = requests.get(url, headers=headers)
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
                 trList = soup.find_all("tr")
                 PATNO = trList[5].find_all("b")[1].string
-                CPC = trList[29].find_all("td")[1].string.replace("&nbsp"," ")
-                IPC = trList[30].find_all("td")[1].string.replace("&nbsp"," ")
                 FILED = changeTimeFormate(trList[14].find_all("b")[0].string)
                 PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
+                
+                # 動態，改偵測 Table 
+                tableList = soup.find_all("table")
+                CPC = tableList[7].find_all("td")[3].string.replace("&nbsp"," ")  
+                IPC = tableList[7].find_all("td")[5].string.replace("&nbsp"," ")  
+                
                 
                 sheetPFIZER.write(rowCount,0,PATNO)
                 sheetPFIZER.write(rowCount,1,CPC)
@@ -118,7 +123,7 @@ while True:
             }
             print("sleep 15 sec")
             time.sleep(15)
-    if index > 2:  # 6961
+    if index > 3:  # 6961
         break
 
 workbook.save('result.xls') 

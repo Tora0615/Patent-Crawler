@@ -39,7 +39,7 @@ def changeTimeFormate(input):
         return temp[2]+"/12/"+temp[1]
 
 # 偽造 UserAgent
-ua = UserAgent()
+ua = UserAgent(use_cache_server=False)
 headers = {
     'User-Agent': ua.random,
     "Accept": 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -62,6 +62,9 @@ headers = {
 
 # PFIZER INC index : 1 ~ 6969
 index = 1
+min = index 
+MAX = 6969
+fileName = 'Pfizer'+str(min)+'-'+str(MAX)+'.xls' 
 url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
 rowCount = 0
 
@@ -124,7 +127,10 @@ while True:
                 sheetPFIZER.write(rowCount,3,FILED)
                 sheetPFIZER.write(rowCount,4,PATDATE)
                 
-                print("----"+str(index)+"/6969 OK------")
+                print("----"+str(index)+"/"+str(MAX)+" OK------")
+                if index%50 == 0 :
+                    workbook.save(fileName) 
+                    print("saved")
                 index += 1
                 rowCount += 1
                 break
@@ -153,9 +159,10 @@ while True:
             }
             print("sleep 15 sec")
             time.sleep(15)
-    if index > 6969:  # 6969
+    if index > MAX:  # 6969
         break
 
-workbook.save('PfizerResult.xls') 
+
+workbook.save(fileName) 
 
 

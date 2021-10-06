@@ -20,9 +20,14 @@ ws = wb.add_worksheet() #建立一個sheet1的表
 ws.set_column(0,0,10) 
 ws.set_column(1,2,100)
 ws.set_column(3,4,10)
-ws.write_string(0, 0, "10")
-ws.write_string(0, 1, "100")
-ws.write_string(0, 2, "100")
-ws.write_string(0, 3, "10")
-ws.write_string(0, 4, "10")
+ 
+for i in range(10000):
+    if i%1000 == 0:
+        print(i)
+    ws.write_string(i, 0, "10")
+    ws.write_string(i, 1, "100")
+    ws.write_string(i, 2, "100")
+    ws.write_string(i, 3, "10")
+    ws.write_string(i, 4, "10")
+
 wb.close()

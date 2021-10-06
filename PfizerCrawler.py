@@ -69,7 +69,7 @@ url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=
 rowCount = 0
 
 # New Excel
-wb = xlsxwriter.Workbook(filename, {'constant_memory': True}) #workbook
+wb = xlsxwriter.Workbook(fileName, {'constant_memory': True}) #workbook
 ws = wb.add_worksheet() #建立一個sheet1的表
 
 #設定列寬

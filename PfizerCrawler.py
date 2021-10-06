@@ -4,7 +4,7 @@ Created on Tue Oct  5 10:23:09 2021
 
 @author: Arthur
 """
-import xlwt 
+import xlsxwriter
 import requests
 import time
 from fake_useragent import UserAgent
@@ -69,8 +69,13 @@ url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=
 rowCount = 0
 
 # New Excel
-workbook = xlwt.Workbook(encoding='utf-8') 
-sheetPFIZER = workbook.add_sheet("PFIZER") 
+wb = xlsxwriter.Workbook(filename, {'constant_memory': True}) #workbook
+ws = wb.add_worksheet() #建立一個sheet1的表
+
+#設定列寬
+ws.set_column(0,0,10) 
+ws.set_column(1,2,100)
+ws.set_column(3,4,10)
 
 while True:     
     while True:
@@ -121,16 +126,16 @@ while True:
                 except:
                     pass
                 
-                sheetPFIZER.write(rowCount,0,PATNO)
-                sheetPFIZER.write(rowCount,1,CPC)
-                sheetPFIZER.write(rowCount,2,IPC)
-                sheetPFIZER.write(rowCount,3,FILED)
-                sheetPFIZER.write(rowCount,4,PATDATE)
+                ws.write_string(rowCount,0,PATNO)
+                ws.write_string(rowCount,1,CPC)
+                ws.write_string(rowCount,2,IPC)
+                ws.write_string(rowCount,3,FILED)
+                ws.write_string(rowCount,4,PATDATE)
                 
                 print("----"+str(index)+"/"+str(MAX)+" OK------")
-                if index%50 == 0 :
-                    workbook.save(fileName) 
-                    print("saved")
+                # if index%50 == 0 :
+                #     workbook.save(fileName) 
+                #     print("saved")
                 index += 1
                 rowCount += 1
                 break
@@ -163,6 +168,6 @@ while True:
         break
 
 
-workbook.save(fileName) 
+wb.close()
 
 

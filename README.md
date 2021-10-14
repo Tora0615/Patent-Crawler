@@ -2,34 +2,88 @@
 A repo to save a commission's crawler which can get some companies' info from patft.uspto.gov\.
 
 
-## Data locate : 
+## Data locate :
 
-### PAT NO
+### Static data :
+
+Positions will not change.
+
+
+#### PAT NO
 ```soup.find_all("tr")[5].find_all("b")[1].string```
 
-### CPC
-```soup.find_all("tr")[29].find_all("td")[1].string```
-* Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
-
-### IPC
-```soup.find_all("tr")[30].find_all("td")[1].string```
-* Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
-
-### Filed 
-```soup.find_all("tr")[14].find_all("b")[0].string```
-* Need to replace time type
-    * use ```changeTimeFormate()```
-
-### Date of patent
+#### PAT DATE (Date of patent)
 ```soup.find_all("tr")[6].find_all("b")[1].string```
 * output : \n     September 28, 2021\n
     * Need replace \n and space at left and right
         * use ```.replace("\n","").strip()```
-* Need to replace time type 
+* Need to replace time type
     * use ```changeTimeFormate()```
 
+
+
+### Float data :
+
+#### Filed
+~~```soup.find_all("tr")[14].find_all("b")[0].string```~~
+
+* 動態抓取 :
+```python
+tempIndex = 6
+while True:
+    if tempIndex > 50:
+        break
+    try:
+        if "Filed" in trList[tempIndex].find_all("th")[0].string :
+            break
+        else:
+            tempIndex += 1
+    except:
+        tempIndex += 1
+try:
+    FILED = changeTimeFormate(trList[tempIndex].find_all("b")[0].string)
+except:
+    pass
+```
+* Need to replace time type
+    * use ```changeTimeFormate()```
+
+
+
+
+
+#### CPC & IPC
+* CPC :
+  * ~~```soup.find_all("tr")[29].find_all("td")[1].string```~~
+  * Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
+
+* IPC :
+  * ~~```soup.find_all("tr")[30].find_all("td")[1].string```~~
+  * Need to use ```.replace("&nbsp"," ")``` to replace "&nbsp"
+
+* 兩者同時動態抓取 :
+```python
+tempIndex = 10
+while True:
+    if tempIndex > 50:
+        break
+    try:
+        if "CPC" in trList[tempIndex].find_all("td")[0].string :
+            break
+        else:
+            tempIndex += 1
+    except:
+        tempIndex += 1
+try:
+    CPC = trList[tempIndex].find_all("td")[1].string.replace("&nbsp"," ")
+    IPC = trList[tempIndex+1].find_all("td")[1].string.replace("&nbsp"," ")
+except:
+    pass
+```
+
+
 ## changeTimeFormate
-* origin formate like : September 28, 2021 
+* origin formate like : September 28, 2021
     * change to 2021/09/28
 
 ```python

@@ -62,9 +62,9 @@ headers = {
 
 # PFIZER INC index : 1 ~ 6969
 index = 1
-min = index 
+min = index
 MAX = 6969
-fileName = 'Pfizer'+str(min)+'-'+str(MAX)+'.xls' 
+fileName = 'Pfizer'+str(min)+'-'+str(MAX)+'.xls'
 url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
 rowCount = 0
 
@@ -73,13 +73,13 @@ wb = xlsxwriter.Workbook(fileName, {'constant_memory': True}) #workbook
 ws = wb.add_worksheet() #建立一個sheet1的表
 
 #設定列寬
-ws.set_column(0,0,10) 
+ws.set_column(0,0,10)
 ws.set_column(1,2,100)
 ws.set_column(3,4,10)
 
-while True:     
+while True:
     while True:
-        try : 
+        try :
             #time.sleep(5)
             url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
             result = requests.get(url, headers=headers)
@@ -91,14 +91,14 @@ while True:
                 FILED =''
                 CPC =''
                 IPC =''
-                
-                # 動態，改動態搜尋關鍵字 
+
+                # 動態，改動態搜尋關鍵字
                 tempIndex = 6
                 while True:
                     if tempIndex > 50:
                         break
                     try:
-                        if "Filed" in trList[tempIndex].find_all("th")[0].string : 
+                        if "Filed" in trList[tempIndex].find_all("th")[0].string :
                             break
                         else:
                             tempIndex += 1
@@ -108,13 +108,13 @@ while True:
                     FILED = changeTimeFormate(trList[tempIndex].find_all("b")[0].string)
                 except:
                     pass
-                
+
                 tempIndex = 10
                 while True:
                     if tempIndex > 50:
                         break
                     try:
-                        if "CPC" in trList[tempIndex].find_all("td")[0].string : 
+                        if "CPC" in trList[tempIndex].find_all("td")[0].string :
                             break
                         else:
                             tempIndex += 1
@@ -125,16 +125,19 @@ while True:
                     IPC = trList[tempIndex+1].find_all("td")[1].string.replace("&nbsp"," ")
                 except:
                     pass
-                
-                ws.write_string(rowCount,0,PATNO)
-                ws.write_string(rowCount,1,CPC)
-                ws.write_string(rowCount,2,IPC)
-                ws.write_string(rowCount,3,FILED)
-                ws.write_string(rowCount,4,PATDATE)
-                
+
+                try:
+                    ws.write_string(rowCount,0,PATNO)
+                    ws.write_string(rowCount,1,CPC)
+                    ws.write_string(rowCount,2,IPC)
+                    ws.write_string(rowCount,3,FILED)
+                    ws.write_string(rowCount,4,PATDATE)
+                except:
+                    pass
+
                 print("----"+str(index)+"/"+str(MAX)+" OK------")
                 # if index%50 == 0 :
-                #     workbook.save(fileName) 
+                #     workbook.save(fileName)
                 #     print("saved")
                 index += 1
                 rowCount += 1
@@ -169,5 +172,3 @@ while True:
 
 
 wb.close()
-
-

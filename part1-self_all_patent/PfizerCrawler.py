@@ -64,7 +64,7 @@ headers = {
 index = 1
 min = index
 MAX = 6969
-fileName = 'Pfizer'+str(min)+'-'+str(MAX)+'.xls'
+fileName = 'Pfizer'+str(min)+'-'+str(MAX)+'.xlsx'
 url = "https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(index)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
 rowCount = 0
 

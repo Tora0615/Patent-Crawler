@@ -14,8 +14,8 @@ from bs4 import BeautifulSoup
 # -- variable init --
 host = "https://patft.uspto.gov"
 MIN = current_running = 1 # PFIZER INC : 1 ~ 6969
-MAX = 1
-fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xls'
+MAX = 4
+fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
 
 
@@ -26,9 +26,11 @@ wb = xlsxwriter.Workbook(fileName, {'constant_memory': True}) #workbook
 ws = wb.add_worksheet() #建立一個sheet1的表
 #設定列寬
 ws.set_column(0,0,10)
-ws.set_column(1,2,100)
-ws.set_column(3,4,10)
-
+ws.set_column(1,1,15)
+ws.set_column(2,2,150)
+ws.set_column(3,3,100)
+ws.set_column(4,5,10)
+ws.set_column(6,6,150)
 
 # 偽造 UserAgent
 ua = UserAgent(use_cache_server=False)
@@ -242,7 +244,7 @@ while True:
     
     url = host + "/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(current_running)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
     getMainPatentByUrl(url)
-    print("------------" + str(current_running) + "/" + str(MAX) + "OK ------------")
+    print("------------ " + str(current_running) + "/" + str(MAX) + " - OK ------------")
     current_running += 1
     if current_running > MAX:  # 6969
         break

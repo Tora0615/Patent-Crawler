@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 # -- variable init --
 host = "https://patft.uspto.gov"
 MIN = current_running = 1 # PFIZER INC : 1 ~ 6969
-MAX = 4
+MAX = 100
 fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
 

@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 # -- variable init --
 host = "https://patft.uspto.gov"
 MIN = current_running = 1 # PFIZER INC : 1 ~ 6969
-MAX = 100
+MAX = 2
 fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
 
@@ -126,7 +126,8 @@ def getMainPatentByUrl(url):
                             if "http" not in relative_url:
                                 writeFile(excel_current, 2 , getRelativePatentByUrl(host + relative_url))
                             else:
-                                writeFile(excel_current, 6 , [relative_url]) # TODO
+                                # writeFile(excel_current, 6 , [relative_url]) # old : save strange url to the end
+                                writeFile(excel_current, 2 , getRelativePatentByStrengeUrl(relative_url))
                                 
                             # print info
                             wrote_count += 1
@@ -340,11 +341,11 @@ def getRelativePatentByStrengeUrl(url):
     realUrl = getRealUrl(url)
     while True:
         try :
-            result = requests.get(url, headers=appftHeaders)
+            result = requests.get(realUrl, headers=appftHeaders)
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
-                
-                return None
+                returnData = parsingAppftPatentInfo(soup)
+                return [returnData["CPC"],returnData['IPC'],returnData['FILED'],returnData['PATDATE']]
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:

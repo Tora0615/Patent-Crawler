@@ -280,8 +280,8 @@ def parsingAppftPatentInfo(soup):
     trList = soup.find_all("tr")
     
     try:
-        #PATNO = trList[5].find_all("b")[1].string
-        PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
+        #PATNO = trList[1].find_all("i")[0].string
+        PATDATE = changeTimeFormate(trList[3].find_all("b")[1].string.replace("\n","").strip())
     except :
         #PATNO = ''
         PATDATE = ''
@@ -293,12 +293,12 @@ def parsingAppftPatentInfo(soup):
     IPC =''
 
     # 動態，改動態搜尋關鍵字
-    tempcurrent_running = 6
+    tempcurrent_running = 3
     while True:
         if tempcurrent_running > 50:
             break
         try:
-            if "Filed" in trList[tempcurrent_running].find_all("th")[0].string :
+            if "Filed" in trList[tempcurrent_running].find_all("td")[0].string :
                 break
             else:
                 tempcurrent_running += 1
@@ -365,7 +365,6 @@ def getRelativePatentByStrengeUrl(url):
 print("--------------------------------")
 
 while True:
-    
     url = host + "/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(current_running)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
     getMainPatentByUrl(url)
     print("------------ " + str(current_running) + "/" + str(MAX) + " - OK ------------")

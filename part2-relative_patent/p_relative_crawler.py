@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup
 # -- variable init --
 host = "https://patft.uspto.gov"
 MIN = current_running = 1 # PFIZER INC : 1 ~ 6969
-MAX = 2
+MAX = 5
 fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
 
@@ -217,7 +217,22 @@ def parsingPatftPatentInfo(soup):
             tempcurrent_running += 1
     try:
         CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
-        IPC = trList[tempcurrent_running+1].find_all("td")[1].string.replace("&nbsp"," ")
+    except:
+        pass
+    
+    tempcurrent_running = 10
+    while True:
+        if tempcurrent_running > 50:
+            break
+        try:
+            if "International" in trList[tempcurrent_running].find_all("td")[0].string :
+                break
+            else:
+                tempcurrent_running += 1
+        except:
+            tempcurrent_running += 1
+    try:
+        IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     
@@ -324,7 +339,23 @@ def parsingAppftPatentInfo(soup):
             tempcurrent_running += 1
     try:
         CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
-        IPC = trList[tempcurrent_running+2].find_all("td")[1].string.replace("&nbsp"," ")
+    except:
+        pass
+    
+    
+    tempcurrent_running = 10
+    while True:
+        if tempcurrent_running > 50:
+            break
+        try:
+            if "International" in trList[tempcurrent_running].find_all("td")[0].string :
+                break
+            else:
+                tempcurrent_running += 1
+        except:
+            tempcurrent_running += 1
+    try:
+        IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     

@@ -13,7 +13,7 @@ from bs4 import BeautifulSoup
 
 # -- variable init --
 host = "https://patft.uspto.gov"
-MIN = current_running = 1 # PFIZER INC : 1 ~ 6969
+MIN = current_running = 1 # PFIZER INC : 1 ~ 6990
 MAX = 5
 fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
@@ -110,6 +110,7 @@ def getMainPatentByUrl(url):
                         wrote_count = 0
                         # 取得所有相關專利的編號與url
                         for j in range(len(all_tr_list)):
+                            tempString = ''  # 用來存顯示正常(n)還是奇怪網址(s)的識別符號
                             tr_all_td_list = all_tr_list[j].find_all("td")
                             if len(tr_all_td_list) == 0 : # 防最前面空的表格
                                 continue 
@@ -125,21 +126,24 @@ def getMainPatentByUrl(url):
                             # 在 writeFile 中呼叫 getRelativePatentByUrl，在其回傳 list 後進行寫入
                             if "http" not in relative_url:
                                 writeFile(excel_current, 2 , getRelativePatentByUrl(host + relative_url))
+                                tempString = "(n)"
                             else:
                                 # writeFile(excel_current, 6 , [relative_url]) # old : save strange url to the end
                                 writeFile(excel_current, 2 , getRelativePatentByStrengeUrl(relative_url))
+                                tempString = "(s)"  
                                 
                             # print info
                             wrote_count += 1
                             
                             excel_current += 1
-                            print("  |--- relative : "+str(wrote_count)+" - OK ----")
-                
+                            print("  |--- relative " + tempString + " : "+str(wrote_count)+" - OK ----")
+                    else:
+                        continue
                 break
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
-            print(e)
+            print('getMainPatentByUrl - error : ' + str(e) )
             patftHeaders['User-Agent'] = ua.random
             print("sleep 15 sec")
             time.sleep(15)
@@ -160,7 +164,7 @@ def getRelativePatentByUrl(url):
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
-            print(e)
+            print('getRelativePatentByUrl - error : ' + str(e) )
             patftHeaders['User-Agent'] = ua.random
             print("sleep 15 sec")
             time.sleep(15)
@@ -282,12 +286,16 @@ def getRealUrl(url):
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
                 host = 'https://appft.uspto.gov'
-                realUrl = host + soup.find_all('table')[0].find_all('tr')[1].find_all('td')[2].find_all("a")[0].get("href")
+                try:
+                    realUrl = host + soup.find_all('table')[0].find_all('tr')[1].find_all('td')[2].find_all("a")[0].get("href")
+                except:
+                    realUrl = ''
+                    print('| |- getRealUrl - error : don\'t have real url')
                 return realUrl
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
-            print(e)
+            print('getRealUrl - error : ' + str(e) )
             appftHeaders['User-Agent'] = ua.random
             print("sleep 15 sec")
             time.sleep(15)
@@ -370,20 +378,23 @@ def parsingAppftPatentInfo(soup):
 
 def getRelativePatentByStrengeUrl(url):
     realUrl = getRealUrl(url)
-    while True:
-        try :
-            result = requests.get(realUrl, headers=appftHeaders)
-            if result.status_code == 200:
-                soup = BeautifulSoup(result.text,'lxml')
-                returnData = parsingAppftPatentInfo(soup)
-                return [returnData["CPC"],returnData['IPC'],returnData['FILED'],returnData['PATDATE']]
-            else:
-                raise ValueError("status_code NOT 200")
-        except Exception as e:
-            print(e)
-            appftHeaders['User-Agent'] = ua.random
-            print("sleep 15 sec")
-            time.sleep(15)
+    if realUrl != '':
+        while True:
+            try :
+                result = requests.get(realUrl, headers=appftHeaders)
+                if result.status_code == 200:
+                    soup = BeautifulSoup(result.text,'lxml')
+                    returnData = parsingAppftPatentInfo(soup)
+                    return [returnData["CPC"],returnData['IPC'],returnData['FILED'],returnData['PATDATE']]
+                else:
+                    raise ValueError("status_code NOT 200")
+            except Exception as e:
+                print('getRelativePatentByStrengeUrl - error : ' + str(e) )
+                appftHeaders['User-Agent'] = ua.random
+                print("sleep 15 sec")
+                time.sleep(15)
+    else:
+        return ['THIS PATENT DONT HAVE DATA']
 
 
 

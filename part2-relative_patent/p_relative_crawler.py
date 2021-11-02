@@ -173,7 +173,7 @@ def getRelativePatentByUrl(url):
     
 
 
-# 解析soup，取的需要資料後，以字典形式回傳
+# 解析soup，取的需要資料後，以字典形式回傳  #2021/11/03 Add two part crawler
 def parsingPatftPatentInfo(soup):
     trList = soup.find_all("tr")
     
@@ -194,7 +194,7 @@ def parsingPatftPatentInfo(soup):
     tempcurrent_running = 6
     while True:
         if tempcurrent_running > 50:
-            break
+            break  #沒看到新樣式的有，就不寫
         try:
             if "Filed" in trList[tempcurrent_running].find_all("th")[0].string :
                 break
@@ -209,8 +209,20 @@ def parsingPatftPatentInfo(soup):
 
     
     tempcurrent_running = 10
+    tempcurrent_running2 = 0
     while True:
         if tempcurrent_running > 50:
+            # try second type   # 原本 code : break
+            while True:
+                if tempcurrent_running2 > 15:
+                    break
+                try : 
+                    if "CPC" in trList[tempcurrent_running2].find_all('td')[0].text :
+                        break
+                    else:
+                        tempcurrent_running2 += 1
+                except:
+                        tempcurrent_running2 += 1
             break
         try:
             if "CPC" in trList[tempcurrent_running].find_all("td")[0].string :
@@ -220,13 +232,28 @@ def parsingPatftPatentInfo(soup):
         except:
             tempcurrent_running += 1
     try:
-        CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
+        if tempcurrent_running2 != 0:
+            CPC = trList[tempcurrent_running2].find_all('td')[1].text
+        else : 
+            CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     
     tempcurrent_running = 10
+    tempcurrent_running2 = 0
     while True:
         if tempcurrent_running > 50:
+            # try second type   # 原本 code : break
+            while True:
+                if tempcurrent_running2 > 15:
+                    break
+                try:
+                    if "International" in trList[tempcurrent_running2].find_all('td')[0].text :
+                        break
+                    else:
+                        tempcurrent_running2 += 1
+                except:
+                    tempcurrent_running2 += 1
             break
         try:
             if "International" in trList[tempcurrent_running].find_all("td")[0].string :
@@ -236,7 +263,10 @@ def parsingPatftPatentInfo(soup):
         except:
             tempcurrent_running += 1
     try:
-        IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
+        if tempcurrent_running2 != 0:
+            IPC = trList[tempcurrent_running2].find_all('td')[1].text
+        else : 
+            IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     
@@ -426,6 +456,10 @@ wb.close()
 # new : appft (blue)
 
         
-        
-        
+'''     
+沒有完整頁面的 url : 
+https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN%2F2350082
+--> 需要二次嘗試爬蟲 (此功能僅寫在 parsingPatftPatentInfo )
+
+'''
         

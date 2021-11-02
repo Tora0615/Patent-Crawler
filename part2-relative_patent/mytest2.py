@@ -53,7 +53,7 @@ patftHeaders = {
 }
 
 
-url = 'https://patft.uspto.gov/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1909&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22'
+url = 'https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN%2F2350082'
 
 """
 def getRelativePatentByStrengeUrl(url):
@@ -96,13 +96,14 @@ def getRelativePatentByUrl(url):
     return parsingPatftPatentInfo(soup)
 """
 
-'''
+
 while True:
     try :
         result = requests.get(url, headers=patftHeaders)
         if result.status_code == 200:
             soup = BeautifulSoup(result.text,'lxml')
             
+            '''
             #-- get Main patent NO --
             trList = soup.find_all("tr")
             PATNO = trList[5].find_all("b")[1].string  #TODO 改為偵測文字 
@@ -150,6 +151,8 @@ while True:
                         print("  |--- relative " + tempString + " : "+str(wrote_count)+" - OK ----")
                 else:
                     continue
+            '''
+                
             break
         else:
             raise ValueError("status_code NOT 200")
@@ -159,28 +162,7 @@ while True:
         print("sleep 15 sec")
         time.sleep(15)
         
-'''
 
-url = 'http://appft.uspto.gov/netacgi/nph-Parser?TERM1=20000041868&Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.html&r=0&f=S&l=50'
 
-while True:
-    try :
-        result = requests.get(url, headers=appftHeaders)
-        if result.status_code == 200:
-            soup = BeautifulSoup(result.text,'lxml')
-            host = 'https://appft.uspto.gov'
-            try:
-                realUrl = host + soup.find_all('table')[0].find_all('tr')[1].find_all('td')[2].find_all("a")[0].get("href")
-            except:
-                realUrl = ''
-                break
-            #return realUrl
-        else:
-            raise ValueError("status_code NOT 200")
-    except Exception as e:
-        print('getRealUrl - error : ' + str(e) )
-        appftHeaders['User-Agent'] = ua.random
-        print("sleep 15 sec")
-        time.sleep(15)       
-        
+
 

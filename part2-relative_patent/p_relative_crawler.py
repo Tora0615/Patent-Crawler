@@ -461,5 +461,8 @@ wb.close()
 https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN%2F2350082
 --> 需要二次嘗試爬蟲 (此功能僅寫在 parsingPatftPatentInfo )
 
+隔層拿 url 但內容為空
+error : https://appft.uspto.gov/netacgi/nph-Parser?TERM1=20000041868&Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.html&r=0&f=S&l=50
+正常 : https://appft.uspto.gov/netacgi/nph-Parser?TERM1=20070004599&Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.html&r=0&f=S&l=50
 '''
         

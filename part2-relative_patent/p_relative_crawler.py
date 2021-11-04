@@ -13,8 +13,8 @@ from bs4 import BeautifulSoup
 
 # -- variable init --
 host = "https://patft.uspto.gov"
-MIN = current_running = 1 # PFIZER INC : 1 ~ 6990
-MAX = 5
+MIN = current_running = 6545 # PFIZER INC : 1 ~ 6990
+MAX = 6549
 fileName = 'Pfizer'+str(MIN)+'-'+str(MAX)+'.xlsx'
 excel_current = 0
 
@@ -91,10 +91,20 @@ def getMainPatentByUrl(url):
             result = requests.get(url, headers=patftHeaders)
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
+                trList = soup.find_all("tr")
                 
                 #-- 取得主要專利的編號 --
-                trList = soup.find_all("tr")
-                PATNO = trList[5].find_all("b")[1].string  #TODO 改為偵測文字 
+                tempCounter = 0
+                while (True):
+                    if tempCounter > 15 :
+                        break
+                    try : 
+                        if 'United States Patent' in trList[tempCounter].find_all("b")[0].string : 
+                            break
+                        tempCounter += 1
+                    except : 
+                        tempCounter += 1
+                PATNO = trList[tempCounter].find_all("b")[1].string
                 
                 # 寫入 PATNO
                 writeFile(excel_current,0,[PATNO])
@@ -186,9 +196,20 @@ def parsingPatftPatentInfo(soup):
     IPC =''
     
     
-    #TODO 改為偵測文字 
+    # 怕動態，改為偵測先前的 United States Patent，以位移值來找 PATDATE
+    tempCounter = 0
+    while (True):
+        if tempCounter > 15 :
+            break
+        try : 
+            if 'United States Patent' in trList[tempCounter].find_all("b")[0].string : 
+                break
+            tempCounter += 1
+        except : 
+            tempCounter += 1
     try:
-        PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
+        if 'Issue' not in trList[tempCounter+1].find_all("b")[0].string:
+            PATDATE = changeTimeFormate(trList[tempCounter+1].find_all("b")[1].string.replace("\n","").strip())  #換行符轉為空白後，用strip移除字串頭尾的空白，之後再進行時間格式轉換
     except :
         pass
     
@@ -438,7 +459,7 @@ def getRelativePatentByStrengeUrl(url):
 
 
 
-print("--------------------------------")
+print("----------------------------------------")
 
 while True:
     url = host + "/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=4&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(current_running)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22PFIZER+INC%22&OS=%22PFIZER+INC%22"
@@ -468,5 +489,8 @@ https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fneta
 隔層拿 url 但內容為空
 error : https://appft.uspto.gov/netacgi/nph-Parser?TERM1=20000041868&Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.html&r=0&f=S&l=50
 正常 : https://appft.uspto.gov/netacgi/nph-Parser?TERM1=20070004599&Sect1=PTO1&Sect2=HITOFF&d=PG01&p=1&u=%2Fnetahtml%2FPTO%2Fsrchnum.html&r=0&f=S&l=50
+
+
+xxx.strip() --> 移除字串頭尾指定的字符  
 '''
         

@@ -58,29 +58,29 @@ def changeTimeFormate(input):
     input = input.replace(", " , " ")
     temp = input.split(" ")
     if temp[0] == "January" :
-        return temp[2]+"/01/"+temp[1]
+        return temp[2] + "/01/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "February" :
-        return temp[2]+"/02/"+temp[1]
+        return temp[2] + "/02/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "March" :
-        return temp[2]+"/03/"+temp[1]
+        return temp[2] + "/03/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "April" :
-        return temp[2]+"/04/"+temp[1]
+        return temp[2] + "/04/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "May" :
-        return temp[2]+"/05/"+temp[1]
+        return temp[2] + "/05/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "June" :
-        return temp[2]+"/06/"+temp[1]
+        return temp[2] + "/06/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "July" :
-        return temp[2]+"/07/"+temp[1]
+        return temp[2] + "/07/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "August" :
-        return temp[2]+"/08/"+temp[1]
+        return temp[2] + "/08/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "September" :
-        return temp[2]+"/09/"+temp[1]
+        return temp[2] + "/09/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "October" :
-        return temp[2]+"/10/"+temp[1]
+        return temp[2] + "/10/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "November" :
-        return temp[2]+"/11/"+temp[1]
+        return temp[2] + "/11/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     elif temp[0] == "December" :
-        return temp[2]+"/12/"+temp[1]
+        return temp[2] + "/12/" + ('0'+temp[1] if len(temp[1])==1 else temp[1])
     
 # 會從主要 6000 多筆專利中，每份都去讀取有關的專利
 def getMainPatentByUrl(url):
@@ -92,14 +92,14 @@ def getMainPatentByUrl(url):
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
                 
-                #-- get Main patent NO --
+                #-- 取得主要專利的編號 --
                 trList = soup.find_all("tr")
                 PATNO = trList[5].find_all("b")[1].string  #TODO 改為偵測文字 
                 
                 # 寫入 PATNO
                 writeFile(excel_current,0,[PATNO])
                 
-                #-- get relative NO and link --
+                #-- 取得相關專利的編號與連結 --
                 centerList = soup.find_all("center")
                 # 取得正確的 center 並存在 i 
                 for i in range(len(centerList)):
@@ -188,14 +188,12 @@ def parsingPatftPatentInfo(soup):
     
     #TODO 改為偵測文字 
     try:
-        #PATNO = trList[5].find_all("b")[1].string
         PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
     except :
-        #PATNO = ''
         pass
     
 
-    # 動態，改動態搜尋關鍵字  #TODO 改為偵測文字 
+    # 在網頁上是動態的 -> 改動態搜尋關鍵字  
     tempcurrent_running = 6
     while True:
         if tempcurrent_running > 50:

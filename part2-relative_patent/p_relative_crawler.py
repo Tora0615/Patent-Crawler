@@ -159,8 +159,11 @@ def getRelativePatentByUrl(url):
             if result.status_code == 200:
                 soup = BeautifulSoup(result.text,'lxml')
                 returnData = parsingPatftPatentInfo(soup)
-                # break
-                return [returnData["CPC"],returnData['IPC'],returnData['FILED'],returnData['PATDATE']]
+                
+                temp = [returnData["CPC"],returnData['IPC'],returnData['FILED'],returnData['PATDATE']]                
+                if temp == ['','','','']:
+                    return ['THIS PATENT DONT HAVE DATA']
+                return temp
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
@@ -177,20 +180,22 @@ def getRelativePatentByUrl(url):
 def parsingPatftPatentInfo(soup):
     trList = soup.find_all("tr")
     
+    PATDATE = ''
+    FILED =''
+    CPC =''
+    IPC =''
+    
+    
+    #TODO 改為偵測文字 
     try:
         #PATNO = trList[5].find_all("b")[1].string
         PATDATE = changeTimeFormate(trList[6].find_all("b")[1].string.replace("\n","").strip())
     except :
         #PATNO = ''
-        PATDATE = ''
         pass
     
-    
-    FILED =''
-    CPC =''
-    IPC =''
 
-    # 動態，改動態搜尋關鍵字
+    # 動態，改動態搜尋關鍵字  #TODO 改為偵測文字 
     tempcurrent_running = 6
     while True:
         if tempcurrent_running > 50:
@@ -320,14 +325,14 @@ def getRealUrl(url):
                     realUrl = host + soup.find_all('table')[0].find_all('tr')[1].find_all('td')[2].find_all("a")[0].get("href")
                 except:
                     realUrl = ''
-                    print('| |- getRealUrl - error : don\'t have real url')
+                    print('  | |- getRealUrl - error : don\'t have real url')
                 return realUrl
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
-            print('getRealUrl - error : ' + str(e) )
+            print('  | |- getRealUrl - error : ' + str(e) )
             appftHeaders['User-Agent'] = ua.random
-            print("sleep 15 sec")
+            print("  | |- sleep 15 sec")
             time.sleep(15)
 
 def parsingAppftPatentInfo(soup):
@@ -459,6 +464,7 @@ wb.close()
 '''     
 沒有完整頁面的 url : 
 https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN%2F2350082
+https://patft.uspto.gov/netacgi/nph-Parser?Sect2=PTO1&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&d=PALL&RefSrch=yes&Query=PN%2FD230587
 --> 需要二次嘗試爬蟲 (此功能僅寫在 parsingPatftPatentInfo )
 
 隔層拿 url 但內容為空

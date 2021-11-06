@@ -207,11 +207,14 @@ def parsingPatftPatentInfo(soup):
             tempCounter += 1
         except : 
             tempCounter += 1
-    try:
-        if 'Issue' not in trList[tempCounter+1].find_all("b")[0].string:
-            PATDATE = changeTimeFormate(trList[tempCounter+1].find_all("b")[1].string.replace("\n","").strip())  #換行符轉為空白後，用strip移除字串頭尾的空白，之後再進行時間格式轉換
-    except :
+    if tempCounter == 16 :
         pass
+    else :
+        try:
+            if 'Issue' not in trList[tempCounter+1].find_all("b")[0].string:
+                PATDATE = changeTimeFormate(trList[tempCounter+1].find_all("b")[1].string.replace("\n","").strip())  #換行符轉為空白後，用strip移除字串頭尾的空白，之後再進行時間格式轉換
+        except :
+            pass
     
 
     # 在網頁上是動態的 -> 改動態搜尋關鍵字  
@@ -220,16 +223,19 @@ def parsingPatftPatentInfo(soup):
         if tempcurrent_running > 50:
             break  #沒看到新樣式的有，就不寫
         try:
-            if "Filed" in trList[tempcurrent_running].find_all("th")[0].string :
+            if "Filed" in trList[tempcurrent_running].find_all("th")[0].string and "Search" not in trList[tempcurrent_running].find_all("th")[0].string:
                 break
             else:
                 tempcurrent_running += 1
         except:
             tempcurrent_running += 1
-    try:
-        FILED = changeTimeFormate(trList[tempcurrent_running].find_all("b")[0].string)
-    except:
+    if tempcurrent_running == 51 :
         pass
+    else :
+        try:
+            FILED = changeTimeFormate(trList[tempcurrent_running].find_all("b")[0].string)
+        except:
+            pass
 
     
     tempcurrent_running = 10
@@ -257,9 +263,16 @@ def parsingPatftPatentInfo(soup):
             tempcurrent_running += 1
     try:
         if tempcurrent_running2 != 0:
-            CPC = trList[tempcurrent_running2].find_all('td')[1].text
+            # 超過 range 還是沒有搜尋到 (防止雜值) 
+            if tempcurrent_running2 == 16 :
+                pass
+            else :
+                CPC = trList[tempcurrent_running2].find_all('td')[1].text
         else : 
-            CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
+            if tempcurrent_running == 51 :
+                pass
+            else :
+                CPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     
@@ -288,9 +301,15 @@ def parsingPatftPatentInfo(soup):
             tempcurrent_running += 1
     try:
         if tempcurrent_running2 != 0:
-            IPC = trList[tempcurrent_running2].find_all('td')[1].text
+            if tempcurrent_running2 == 16 :
+                pass
+            else :
+                IPC = trList[tempcurrent_running2].find_all('td')[1].text
         else : 
-            IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
+            if tempcurrent_running == 51 :
+                pass
+            else :
+                IPC = trList[tempcurrent_running].find_all("td")[1].string.replace("&nbsp"," ")
     except:
         pass
     

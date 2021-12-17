@@ -353,6 +353,7 @@ appftHeaders = {
 
 
 def getRealUrl(url):
+    retry = 0
     while True:
         try :
             result = requests.get(url, headers=appftHeaders)
@@ -368,6 +369,9 @@ def getRealUrl(url):
             else:
                 raise ValueError("status_code NOT 200")
         except Exception as e:
+            if retry > 3:
+                return ''
+            retry += 1
             print('  | |- getRealUrl - error : ' + str(e) )
             appftHeaders['User-Agent'] = ua.random
             print("  | |- sleep 15 sec")
@@ -512,6 +516,7 @@ def parsingAppftPatentInfo(soup):
 def getRelativePatentByStrengeUrl(url):
     realUrl = getRealUrl(url)
     if realUrl != '':
+        retry = 0
         while True:
             try :
                 result = requests.get(realUrl, headers=appftHeaders)
@@ -522,6 +527,9 @@ def getRelativePatentByStrengeUrl(url):
                 else:
                     raise ValueError("status_code NOT 200")
             except Exception as e:
+                if retry > 3 :
+                    return ['THIS PATENT DONT HAVE DATA']
+                retry += 1
                 print('getRelativePatentByStrengeUrl - error : ' + str(e) )
                 appftHeaders['User-Agent'] = ua.random
                 print("sleep 15 sec")
@@ -541,7 +549,7 @@ def getRelativePatentByStrengeUrl(url):
 print("----------------------------------------")
 
 while True:
-    url = host + "/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r=1&f=G&l=50&co1=AND&d=PTXT&s1=%22JOHNSON+%26+JOHNSON%22&OS=%22JOHNSON+%26+JOHNSON%22&RS=%22JOHNSON+%26+JOHNSON%22"
+    url = host + "/netacgi/nph-Parser?Sect1=PTO2&Sect2=HITOFF&p=1&u=%2Fnetahtml%2FPTO%2Fsearch-bool.html&r="+str(current_running)+"&f=G&l=50&co1=AND&d=PTXT&s1=%22JOHNSON+%26+JOHNSON%22&OS=%22JOHNSON+%26+JOHNSON%22&RS=%22JOHNSON+%26+JOHNSON%22"
     getMainPatentByUrl(url)
     print("------------ " + str(current_running) + "/" + str(MAX) + " - OK ------------")
     current_running += 1
